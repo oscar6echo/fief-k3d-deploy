@@ -175,6 +175,8 @@ docker run \
 - Log in:
 
   - BEWARE which host and port
+    k3d is kube inside docker with a load balancer to access ingress and node ports.  
+    It is a bit of an Inception style exercice and easy to get lost.
   - IMPORTANT: Probably you need to allow port:
 
     ```sh
