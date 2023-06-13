@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: fief
+
+resources:
+  - configmap-fief.yml
+
+  - deploy-fief-pg.yml
+  - deploy-fief-redis.yml
+  - deploy-fief-server.yml
+  - deploy-fief-worker.yml
+
+  - ingress.yml
+
+  - svc-fief.yml
+  - svc-pg.yml
+  - svc-redis.yml
+
+  # test
+  - deploy-nginx.yml
+  - svc-nginx.yml

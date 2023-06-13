@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-fief
+data:
+  POSTGRES_DB: fief
+  POSTGRES_USER: fief
+
+  PORT: "8080"
+  ROOT_DOMAIN: localhost:8080
+  FIEF_DOMAIN: localhost:8080
+  FIEF_MAIN_USER_EMAIL: oscar22@ex.com
+
+  DATABASE_TYPE: POSTGRESQL
+  DATABASE_HOST: svc-pg.fief.svc.cluster.local
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: fief
+  DATABASE_USERNAME: fief
+
+  REDIS_URL: redis://svc-redis.fief.svc.cluster.local:6379

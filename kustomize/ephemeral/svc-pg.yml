@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-pg
+spec:
+  selector:
+    app: fief-pg
+  # type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-pg-node
+spec:
+  selector:
+    app: fief-pg
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 31000
+  type: NodePort

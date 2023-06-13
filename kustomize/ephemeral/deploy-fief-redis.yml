@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-fief-redis
+spec:
+  selector:
+    matchLabels:
+      app: fief-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fief-redis
+    spec:
+      volumes:
+        - name: pv-store
+          persistentVolumeClaim:
+            claimName: fief-pv-redis-claim
+      containers:
+        - name: fief-redis
+          image: redis:7.0-alpine
+          command: ["redis-server"]
+          args: ["--save", "60", "1", "--loglevel", "warning"]
+          volumeMounts:
+            - mountPath: /data
+              name: pv-store

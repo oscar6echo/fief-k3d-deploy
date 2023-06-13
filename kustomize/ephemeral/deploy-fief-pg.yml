@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-fief-pg
+spec:
+  selector:
+    matchLabels:
+      app: fief-pg
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fief-pg
+    spec:
+      volumes:
+        - name: pv-store
+          persistentVolumeClaim:
+            claimName: fief-pv-pg-claim
+
+      containers:
+        - name: fief-pg
+          image: postgres:14.8-alpine
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pv-store
+          envFrom:
+            - configMapRef:
+                name: cm-fief
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-pg
+                  key: POSTGRES_PASSWORD

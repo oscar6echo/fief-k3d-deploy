@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-fief-server
+spec:
+  selector:
+    matchLabels:
+      app: fief-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fief-server
+    spec:
+      containers:
+        - name: fief-server
+          image: ghcr.io/fief-dev/fief:0.25.2
+          command: ["fief"]
+          args: ["run-server", "--port", "8080"]
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: cm-fief
+          env:
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secret-fief
+                  key: SECRET
+            - name: FIEF_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: secret-fief
+                  key: FIEF_CLIENT_ID
+            - name: FIEF_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secret-fief
+                  key: FIEF_CLIENT_SECRET
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secret-fief
+                  key: ENCRYPTION_KEY
+            - name: FIEF_MAIN_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-fief
+                  key: FIEF_MAIN_USER_PASSWORD
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-pg
+                  key: POSTGRES_PASSWORD
