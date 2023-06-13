@@ -1,6 +1,6 @@
 # K3D Fief Deploy
 
-In addition to the docker-compose deploy in the doc, this is a [k3d](https://k3d.io) ie. local kube deploy recipe.  
+In addition to the [docker-compose](https://docs.fief.dev/self-hosting/deployment/docker-compose/#docker-compose) in the doc, this is a [k3d](https://k3d.io) ie. local kube deploy recipe.  
 This is more cumbersome than the docker compose but closer to an actual deployment.
 
 Tested on Ubuntu 22.04.
