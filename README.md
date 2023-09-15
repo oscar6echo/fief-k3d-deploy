@@ -89,13 +89,13 @@ docker pull dpage/pgadmin4:2023-06-05-1
 - Create cluster
 
 ```sh
-k3d cluster create fief --config ./scripts/k3d-config.yml
+k3d cluster create fief --config k3d-config.yml
 ```
 
 - Create namespace
 
 ```sh
-k3d cluster create fief --config k3d-config.yml
+kubectl create namespace fief
 ```
 
 - Create secrets
