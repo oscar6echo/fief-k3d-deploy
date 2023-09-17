@@ -90,12 +90,16 @@ docker pull dpage/pgadmin4:2023-06-05-1
 
 ```sh
 k3d cluster create fief --config k3d-config.yml
+# check
+kubectl cluster-info
 ```
 
 - Create namespace
 
 ```sh
 kubectl create namespace fief
+# check
+kubectl get ns
 ```
 
 - Create secrets
@@ -103,6 +107,8 @@ kubectl create namespace fief
 ```sh
 kubectl -n fief create secret generic secret-pg --from-env-file=secrets/pg.env
 kubectl -n fief create secret generic secret-fief --from-env-file=secrets/fief.env
+# check
+kubectl -n fief get secret
 ```
 
 - Aliases
@@ -123,10 +129,29 @@ _k apply -k .
 cd kustomize/ephemeral
 _k apply -k .
 
-
 # check
 _k9s
 ```
+
+- Check out k3d containers:
+
+```sh
+❯ docker container list
+CONTAINER ID   IMAGE                            COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                                              NAMES
+4c7d8c4aded0   ghcr.io/k3d-io/k3d-proxy:5.5.1   "/bin/sh -c nginx-pr…"   11 minutes ago   Up 11 minutes   0.0.0.0:443->443/tcp, :::443->443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp, 127.0.0.1:6445->6443/tcp, 0.0.0.0:9000->31000/tcp, :::9000->31000/tcp, 0.0.0.0:9001->31001/tcp, :::9001->31001/tcp   k3d-fief-serverlb
+904db2dfc826   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   11 minutes ago   Up 11 minutes                                                                                                                                                                                                      k3d-fief-agent-0
+09c5b6c830f7   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   11 minutes ago   Up 11 minutes                                                                                                                                                                                                      k3d-fief-server-0
+```
+
+> **WARNING**:  
+> [k3d](https://k3d.io) is kube inside docker with a load balancer to access ingress and node ports.  
+> This inception-style nesting is disconcerting at first: Pay attention to the PORTS section for container `k3d-fief-serverlb`.  
+> Recommendations:
+>
+> - Read the [k3d doc](https://k3d.io/v5.6.0/usage/configfile/) in particular section [Exposing Services](https://k3d.io/v5.4.6/usage/exposing_services/).
+> - Note that any port accessible via your machine `http://localhost:[PORT]` must be exposed via the load balancer i.e. `k3d-fief-serverlb`.
+> - Note that the kube ingress exposes on port 80/443 for resp. HTTP/S.
+>   Read the kube manifests i.e. `.yml` files to follow the ports from load balander to ingress to service to pod.
 
 ![Alt text](./img/snapshot-k9s.png)
 
@@ -142,20 +167,9 @@ _k9s
 
 ![Alt text](./img/snapshot-admin.png)
 
-- Check out swagger `/admin/api/docs//` (button too ?):
+- Check out swagger `/admin/api/docs/` (button too ?):
 
 ![Alt text](./img/snapshot-swagger.png)
-
-- Check out k3d containers:
-
-```sh
-❯ docker container list
-CONTAINER ID   IMAGE                            COMMAND                  CREATED             STATUS             PORTS                                                                                                                                                                                              NAMES
-4348aa4d727d   dpage/pgadmin4:2023-06-05-1      "/entrypoint.sh"         38 minutes ago      Up 38 minutes      443/tcp, 0.0.0.0:8082->80/tcp, :::8082->80/tcp                                                                                                                                                     pgadmin
-ca01b727e5cf   ghcr.io/k3d-io/k3d-proxy:5.5.1   "/bin/sh -c nginx-pr…"   About an hour ago   Up About an hour   0.0.0.0:443->443/tcp, :::443->443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp, 127.0.0.1:6445->6443/tcp, 0.0.0.0:9000->31000/tcp, :::9000->31000/tcp, 0.0.0.0:9001->31001/tcp, :::9001->31001/tcp   k3d-fief-serverlb
-51c57ea544b2   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   About an hour ago   Up About an hour                                                                                                                                                                                                      k3d-fief-agent-0
-1f1aa25f1e60   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   About an hour ago   Up About an hour                                                                                                                                                                                                      k3d-fief-server-0
-```
 
 - Check out postgres db with pgadmin:
 
@@ -170,22 +184,31 @@ docker run \
     --add-host=host.docker.internal:host-gateway \
     dpage/pgadmin4:2023-06-05-1
 
+
+# check new container
+docker container list
+CONTAINER ID   IMAGE                            COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                                              NAMES
+ebcab05cfa92   dpage/pgadmin4:2023-06-05-1      "/entrypoint.sh"         6 seconds ago    Up 5 seconds    443/tcp, 0.0.0.0:8082->80/tcp, :::8082->80/tcp                                                                                                                                                     pgadmin
+4c7d8c4aded0   ghcr.io/k3d-io/k3d-proxy:5.5.1   "/bin/sh -c nginx-pr…"   26 minutes ago   Up 25 minutes   0.0.0.0:443->443/tcp, :::443->443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp, 127.0.0.1:6445->6443/tcp, 0.0.0.0:9000->31000/tcp, :::9000->31000/tcp, 0.0.0.0:9001->31001/tcp, :::9001->31001/tcp   k3d-fief-serverlb
+904db2dfc826   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   26 minutes ago   Up 26 minutes                                                                                                                                                                                                      k3d-fief-agent-0
+09c5b6c830f7   rancher/k3s:v1.26.4-k3s1         "/bin/k3d-entrypoint…"   26 minutes ago   Up 26 minutes                                                                                                                                                                                                      k3d-fief-server-0
 ```
 
-- Log in:
+> **WARNING**:  
+> Same remark as above:. Pay attention to the PORTS section for container `pgadmin`.  
+> Note that pgadmin container does not run within the kube cluster so accesses the fief database via docker "internal localhost" url `host.docker.internal` then the load balancer then [NodePort](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/) service `svc-pg-node`.
 
-  - BEWARE which host and port
-    k3d is kube inside docker with a load balancer to access ingress and node ports. It is a bit of an Inception style exercice and easy to get lost...
-  - IMPORTANT: Probably you need to allow port:
+- Browse: `http://localhost:8082`
+- IMPORTANT: Probably you need to allow port:
 
-    ```sh
-    # allow port
-    sudo ufw allow 9000/tcp
-    # status
-    sudo ufw status numbered
-    # remove
-    sudo ufw delete 1 # twice
-    ```
+  ```sh
+  # allow port
+  sudo ufw allow 9000/tcp
+  # status
+  sudo ufw status numbered
+  # remove
+  sudo ufw delete 1 # twice
+  ```
 
 ![Alt text](./img/snapshot-pgadmin-1.png)
 
