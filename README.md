@@ -65,7 +65,7 @@ Server: Docker Engine - Community
   GitCommit:        de40ad0
 ```
 
-## Imgages
+## Images
 
 Get images:
 
@@ -94,28 +94,37 @@ k3d cluster create fief --config k3d-config.yml
 kubectl cluster-info
 ```
 
+- Aliases
+
+```sh
+alias k='kubectl'
+alias _k='kubectl -n fief'
+alias _k9s='k9s -n fief'
+```
+
 - Create namespace
 
 ```sh
-kubectl create namespace fief
+k create namespace fief
+# or
+cd kustomize/namespace
+k apply -k .
+
 # check
-kubectl get ns
+k get ns
 ```
 
 - Create secrets
 
 ```sh
-kubectl -n fief create secret generic secret-pg --from-env-file=secrets/pg.env
-kubectl -n fief create secret generic secret-fief --from-env-file=secrets/fief.env
+_k create secret generic secret-pg --from-env-file=kustomize/secret/env/pg.env
+_k create secret generic secret-fief --from-env-file=kustomize/secret/env/fief.env
+# or
+cd kustomize/secret
+k apply -k .
+
 # check
-kubectl -n fief get secret
-```
-
-- Aliases
-
-```sh
-alias _k='kubectl -n fief'
-alias _k9s='k9s -n fief'
+_k get secret
 ```
 
 - Deploy
@@ -123,11 +132,11 @@ alias _k9s='k9s -n fief'
 ```sh
 # persistant assets: pv, pvc
 cd kustomize/persistent
-_k apply -k .
+k apply -k .
 
 # ephemeral assets: all the rest
 cd kustomize/ephemeral
-_k apply -k .
+k apply -k .
 
 # check
 _k9s
